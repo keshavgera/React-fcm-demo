@@ -1,23 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Fader from "./components/Fader/Fader";
+
+import React, { useState } from "react";
+import { onMessageListener } from "./firebaseInit";
+import Notifications from "./components/Notifications/Notifications";
+import ReactNotificationComponent from "./components/Notifications/ReactNotification";
+import Text from "../src/components/Text/Text"
+import Link from "../src/components/Link/Link"
+import CachedData from "./data/cache/Cached";
 
 function App() {
+  const [show, setShow] = useState(false);
+  const [notification, setNotification] = useState({ title: "", body: "" });
+
+  console.log(show, notification);
+
+  onMessageListener()
+    .then((payload) => {
+      setShow(true);
+      setNotification({
+        title: payload.notification.title,
+        body: payload.notification.body,
+      });
+      console.log(payload);
+    })
+    .catch((err) => console.log("failed: ", err));
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {show ? (
+        <ReactNotificationComponent
+          title={notification.title}
+          body={notification.body}
+        />
+      ) : (
+        <></>
+      )}
+      <Notifications />
+      <Fader text="Hello React"></Fader>
+      <Text />
+      <CachedData />
+      <Link>Made with ❤️ - Aseem</Link>
     </div>
   );
 }
